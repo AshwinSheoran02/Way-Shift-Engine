@@ -9,6 +9,7 @@ import {
   FALLBACK_REPLAN_DELAY,
   FALLBACK_REPLAN_EXHAUSTED,
 } from '../services/fallbackData';
+import { trackDisruptionDetected, trackReplanCompleted } from '../services/analyticsService';
 
 /**
  * Selects the most appropriate fallback replan based on the user's message.
@@ -68,6 +69,10 @@ export function useChat(
     // Update the itinerary
     onReplan(result);
 
+    // Track analytics
+    trackDisruptionDetected(result.disruptionDetected);
+    trackReplanCompleted(result.changedActivityIds.length + result.addedActivityIds.length + result.removedActivityIds.length);
+
     // Append assistant message
     const assistantContent = usedFallback
       ? `I've adjusted your plan based on the disruption. (Using demo data — add VITE_GEMINI_API_KEY for live replanning)`
@@ -78,6 +83,7 @@ export function useChat(
       role: 'assistant',
       content: assistantContent,
       replanResult: result,
+      previousPlan: currentPlan,
       timestamp: new Date().toISOString(),
     };
     setMessages((prev) => [...prev, assistantMessage]);

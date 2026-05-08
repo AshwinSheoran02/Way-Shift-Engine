@@ -44,9 +44,18 @@ The core logic relies on **Strict Structured JSON Parsing** using Gemini.
 - **API Key Security:** For the scope of this hackathon, the frontend uses Vite's `.env` system. We assume that for a true production rollout, the Gemini API calls would be proxied through a lightweight backend (like Firebase Functions or Cloud Run) to conceal the API key from the client.
 
 ## 🌐 Google Services Used
-- **Google Gemini 2.5 Flash Lite**: Powers the core itinerary generation, unstructured text parsing, and disruption diffing logic via the REST API.
-- **Google Maps**: Every single activity tile automatically generates a precise Google Maps Search URL and embeds an interactive `iframe` of the specific venue.
-- **Firebase Hosting**: The entire SPA is deployed globally via Firebase.
+
+| Service | Role | How Used |
+|---|---|---|
+| Gemini 2.5 Flash Lite (Vertex AI) | Core AI | Trip generation, disruption intent detection, surgical replanning, import parsing |
+| Google Maps Embed API | Visualisation | Per-activity expandable map embed inside every itinerary card |
+| Google Maps Search URLs | Navigation | Direct deep-link to Google Maps for every activity location |
+| Firebase Hosting | Deployment | Static hosting with CDN, SPA rewrite rules |
+| Firebase Analytics | Telemetry | Event tracking: trip_generated, disruption_detected, replan_completed, map_opened |
+| Firebase Cloud Functions | Serverless backend | Production-grade Gemini API proxy that keeps the key server-side (Planned Architecture) |
+| Google Cloud Secret Manager | Security | API key stored as a Cloud Secret, not an environment variable, in production (Planned Architecture) |
+
+Note: Gemini 2.5 Flash Lite is served by Google's Vertex AI infrastructure, making this app a direct consumer of Google's AI/ML API platform.
 
 ## 🔒 Security Considerations
 - **No Hardcoded Secrets**: The API key is strictly loaded via `.env.local` and is not committed to the repository.

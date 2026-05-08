@@ -60,6 +60,7 @@ export interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
   replanResult?: ReplanResult;
+  previousPlan?: TripPlan;
   timestamp: string;
 }
 

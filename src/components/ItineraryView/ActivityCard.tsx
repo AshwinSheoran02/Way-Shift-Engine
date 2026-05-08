@@ -2,6 +2,7 @@ import { memo, useState } from 'react';
 import type { Activity } from '../../types/trip.types';
 import { CATEGORY_EMOJI } from '../../constants/categories';
 import { buildMapsEmbedUrl, buildMapsSearchUrl } from '../../services/mapsService';
+import { trackMapOpened } from '../../services/analyticsService';
 
 type ActivityStatus = 'changed' | 'added' | 'removed' | 'unchanged';
 
@@ -85,7 +86,10 @@ export const ActivityCard = memo(function ActivityCard({ activity, status, desti
 
         {/* Map toggle */}
         <button
-          onClick={() => setMapExpanded((prev) => !prev)}
+          onClick={() => setMapExpanded((prev) => {
+            if (!prev) trackMapOpened(activity.location);
+            return !prev;
+          })}
           className="flex items-center gap-1.5 text-xs font-medium text-gray-500
             hover:text-[#4285F4] transition-colors
             focus:outline-none focus:ring-2 focus:ring-[#4285F4] rounded"

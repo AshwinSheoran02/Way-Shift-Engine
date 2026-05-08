@@ -1,11 +1,13 @@
-import type { ReplanResult } from '../../types/trip.types';
+import { useMemo } from 'react';
+import type { ReplanResult, TripPlan, Activity } from '../../types/trip.types';
 import { CATEGORY_EMOJI } from '../../constants/categories';
 
 interface DiffViewProps {
   replanResult: ReplanResult;
+  previousPlan?: TripPlan;
 }
 
-export function DiffView({ replanResult }: DiffViewProps) {
+export function DiffView({ replanResult, previousPlan }: DiffViewProps) {
   const { updatedPlan, changedActivityIds, removedActivityIds, addedActivityIds } = replanResult;
 
   const affectedActivities = updatedPlan.days.flatMap((day) =>
@@ -18,11 +20,23 @@ export function DiffView({ replanResult }: DiffViewProps) {
       }))
   );
 
-  const removedItems = removedActivityIds.map((id) => ({
-    id,
-    title: `Activity ${id}`,
-    status: 'removed' as const,
-  }));
+  const previousActivityMap = useMemo(() => {
+    const map = new Map<string, Activity>();
+    if (!previousPlan) return map;
+    previousPlan.days.forEach(day =>
+      day.activities.forEach(act => map.set(act.id, act))
+    );
+    return map;
+  }, [previousPlan]);
+
+  const removedItems = removedActivityIds.map((id) => {
+    const activity = previousActivityMap.get(id);
+    return {
+      id,
+      title: activity?.title ?? `Activity ${id}`,
+      status: 'removed' as const,
+    };
+  });
 
   if (affectedActivities.length === 0 && removedItems.length === 0) return null;
 

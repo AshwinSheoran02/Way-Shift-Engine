@@ -14,6 +14,7 @@ import { buildMapsSearchUrl } from './services/mapsService';
 import { sanitizeInput } from './utils/sanitize';
 import { FALLBACK_TRIP } from './services/fallbackData';
 import { parseImportedTrip } from './services/importParser';
+import { trackTripGenerated, trackImportUsed } from './services/analyticsService';
 
 /**
  * Generates a readable text version of the trip plan for download.
@@ -90,6 +91,7 @@ export default function App() {
     }
 
     setPlan(result);
+    trackTripGenerated(result.destination, result.days.length);
     clearDisruption();
     clearMessages();
     setShowFallbackBanner(usedFallback);
@@ -106,6 +108,7 @@ export default function App() {
     setImportWarning(null);
     const { plan, warning } = await parseImportedTrip(rawText);
     setPlan(plan);
+    trackImportUsed();
     clearDisruption();
     clearMessages();
     setImportWarning(warning ?? null);

@@ -28,7 +28,7 @@ export function ChatMessage({ message }: ChatMessageProps) {
 
         {message.replanResult && (
           <div className="space-y-3 w-full">
-            <DiffView replanResult={message.replanResult} />
+            <DiffView replanResult={message.replanResult} previousPlan={message.previousPlan} />
             <ExplainPanel replanResult={message.replanResult} />
           </div>
         )}
