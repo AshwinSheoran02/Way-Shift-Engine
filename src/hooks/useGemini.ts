@@ -18,7 +18,7 @@ export function useGemini() {
   const callWithFallback = useCallback(async <T>(
     prompt: string,
     fallback: T
-  ): Promise<{ result: T; usedFallback: boolean }> => {
+  ): Promise<{ result: T; usedFallback: boolean; errorMsg?: string }> => {
     setLoading(true);
     setError(null);
 
@@ -31,9 +31,10 @@ export function useGemini() {
       const message = err instanceof GeminiError
         ? err.message
         : 'An unexpected error occurred.';
+      console.error('Gemini call failed, falling back:', err);
       setError(message);
       setLoading(false);
-      return { result: fallback, usedFallback: true };
+      return { result: fallback, usedFallback: true, errorMsg: message };
     }
   }, []);
 

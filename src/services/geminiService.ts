@@ -15,10 +15,10 @@ export class ParseError extends Error {
 }
 
 const API_KEY = import.meta.env.VITE_GEMINI_API_KEY as string | undefined;
-const ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent`;
+const ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent`;
 
 /**
- * Calls the Gemini 1.5 Flash API with the given prompt.
+ * Calls the Gemini 2.5 Flash Lite API with the given prompt.
  * Throws GeminiError if the API key is missing or the request fails.
  */
 export async function callGemini(prompt: string): Promise<string> {

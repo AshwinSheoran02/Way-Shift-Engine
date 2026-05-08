@@ -11,8 +11,7 @@ interface TripFormProps {
 }
 
 /**
- * Trip planning form with destination, dates, budget, energy level, interests, and constraints.
- * All inputs have proper labels for accessibility. Light-first with dark: variants.
+ * Trip planning form. Light mode only with Google accent colors.
  */
 export function TripForm({ onSubmit, loading }: TripFormProps) {
   const [formData, setFormData] = useState<TripFormData>({
@@ -60,7 +59,7 @@ export function TripForm({ onSubmit, loading }: TripFormProps) {
     <form onSubmit={handleSubmit} className="space-y-6 animate-fade-in">
       {/* Destination */}
       <div>
-        <label htmlFor="destination" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+        <label htmlFor="destination" className="block text-sm font-medium text-gray-700 mb-1.5">
           Destination
         </label>
         <input
@@ -69,15 +68,15 @@ export function TripForm({ onSubmit, loading }: TripFormProps) {
           placeholder="e.g., Jaipur, Goa, Manali..."
           value={formData.destination}
           onChange={(e) => handleChange('destination', e.target.value)}
-          className="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+          className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#4285F4] focus:border-transparent text-sm"
         />
-        {errors.destination && <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.destination}</p>}
+        {errors.destination && <p className="mt-1 text-xs text-[#EA4335]">{errors.destination}</p>}
       </div>
 
       {/* Dates */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label htmlFor="startDate" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+          <label htmlFor="startDate" className="block text-sm font-medium text-gray-700 mb-1.5">
             Start Date
           </label>
           <input
@@ -85,12 +84,12 @@ export function TripForm({ onSubmit, loading }: TripFormProps) {
             type="date"
             value={formData.startDate}
             onChange={(e) => handleChange('startDate', e.target.value)}
-            className="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+            className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#4285F4] focus:border-transparent text-sm"
           />
-          {errors.startDate && <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.startDate}</p>}
+          {errors.startDate && <p className="mt-1 text-xs text-[#EA4335]">{errors.startDate}</p>}
         </div>
         <div>
-          <label htmlFor="endDate" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+          <label htmlFor="endDate" className="block text-sm font-medium text-gray-700 mb-1.5">
             End Date
           </label>
           <input
@@ -98,16 +97,16 @@ export function TripForm({ onSubmit, loading }: TripFormProps) {
             type="date"
             value={formData.endDate}
             onChange={(e) => handleChange('endDate', e.target.value)}
-            className="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+            className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#4285F4] focus:border-transparent text-sm"
           />
-          {errors.endDate && <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.endDate}</p>}
+          {errors.endDate && <p className="mt-1 text-xs text-[#EA4335]">{errors.endDate}</p>}
         </div>
       </div>
 
       {/* Budget Slider */}
       <div>
-        <label htmlFor="budget" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-          Budget per day: <span className="text-indigo-600 dark:text-indigo-400 font-semibold">₹{formData.budgetPerDayINR.toLocaleString('en-IN')}</span>
+        <label htmlFor="budget" className="block text-sm font-medium text-gray-700 mb-1.5">
+          Budget per day: <span className="text-[#4285F4] font-semibold">₹{formData.budgetPerDayINR.toLocaleString('en-IN')}</span>
         </label>
         <input
           id="budget"
@@ -117,50 +116,54 @@ export function TripForm({ onSubmit, loading }: TripFormProps) {
           step={500}
           value={formData.budgetPerDayINR}
           onChange={(e) => handleChange('budgetPerDayINR', Number(e.target.value))}
-          className="w-full h-2 rounded-lg cursor-pointer bg-slate-200 dark:bg-slate-700 accent-indigo-600"
+          className="w-full h-2 rounded-lg cursor-pointer"
         />
-        <div className="flex justify-between text-xs text-slate-400 dark:text-slate-500 mt-1">
+        <div className="flex justify-between text-xs text-gray-400 mt-1">
           <span>₹1,000</span>
           <span>₹50,000</span>
         </div>
-        {errors.budgetPerDayINR && <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.budgetPerDayINR}</p>}
+        {errors.budgetPerDayINR && <p className="mt-1 text-xs text-[#EA4335]">{errors.budgetPerDayINR}</p>}
       </div>
 
       {/* Energy Level */}
       <fieldset>
-        <legend className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+        <legend className="block text-sm font-medium text-gray-700 mb-2">
           Energy Level
         </legend>
         <div className="flex gap-3">
-          {(['relaxed', 'active', 'intense'] as const).map((level) => (
-            <label
-              key={level}
-              className={`flex-1 text-center py-2.5 rounded-xl cursor-pointer text-sm font-medium transition-all duration-200 border ${
-                formData.energyLevel === level
-                  ? 'bg-indigo-600 text-white border-indigo-600 shadow-md'
-                  : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:border-indigo-300 dark:hover:border-indigo-600'
-              }`}
-            >
-              <input
-                type="radio"
-                name="energyLevel"
-                value={level}
-                checked={formData.energyLevel === level}
-                onChange={() => handleChange('energyLevel', level)}
-                className="sr-only"
-              />
-              {level === 'relaxed' && '😌 '}
-              {level === 'active' && '🚶 '}
-              {level === 'intense' && '🏃 '}
-              {level.charAt(0).toUpperCase() + level.slice(1)}
-            </label>
-          ))}
+          {(['relaxed', 'active', 'intense'] as const).map((level) => {
+            const colors = {
+              relaxed: { active: 'bg-[#34A853] border-[#34A853]', emoji: '😌' },
+              active: { active: 'bg-[#4285F4] border-[#4285F4]', emoji: '🚶' },
+              intense: { active: 'bg-[#EA4335] border-[#EA4335]', emoji: '🏃' },
+            };
+            return (
+              <label
+                key={level}
+                className={`flex-1 text-center py-2.5 rounded-xl cursor-pointer text-sm font-medium transition-all duration-200 border ${
+                  formData.energyLevel === level
+                    ? `${colors[level].active} text-white shadow-md`
+                    : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="energyLevel"
+                  value={level}
+                  checked={formData.energyLevel === level}
+                  onChange={() => handleChange('energyLevel', level)}
+                  className="sr-only"
+                />
+                {colors[level].emoji} {level.charAt(0).toUpperCase() + level.slice(1)}
+              </label>
+            );
+          })}
         </div>
       </fieldset>
 
       {/* Interests */}
       <fieldset>
-        <legend className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+        <legend className="block text-sm font-medium text-gray-700 mb-2">
           Interests
         </legend>
         <div className="flex flex-wrap gap-2">
@@ -171,8 +174,8 @@ export function TripForm({ onSubmit, loading }: TripFormProps) {
               onClick={() => togglePill('interests', interest)}
               className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
                 formData.interests.includes(interest)
-                  ? 'bg-indigo-600 text-white shadow-md'
-                  : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700 hover:border-indigo-300 dark:hover:border-indigo-600'
+                  ? 'bg-[#4285F4] text-white shadow-md'
+                  : 'bg-white text-gray-600 border border-gray-200 hover:border-[#4285F4] hover:text-[#4285F4]'
               }`}
             >
               {interest}
@@ -183,7 +186,7 @@ export function TripForm({ onSubmit, loading }: TripFormProps) {
 
       {/* Constraints */}
       <fieldset>
-        <legend className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+        <legend className="block text-sm font-medium text-gray-700 mb-2">
           Constraints
         </legend>
         <div className="flex flex-wrap gap-2">
@@ -194,8 +197,8 @@ export function TripForm({ onSubmit, loading }: TripFormProps) {
               onClick={() => togglePill('constraints', constraint)}
               className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
                 formData.constraints.includes(constraint)
-                  ? 'bg-amber-500 text-white shadow-md'
-                  : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700 hover:border-amber-300 dark:hover:border-amber-600'
+                  ? 'bg-[#FBBC04] text-gray-900 shadow-md'
+                  : 'bg-white text-gray-600 border border-gray-200 hover:border-[#FBBC04] hover:text-gray-900'
               }`}
             >
               {constraint}
@@ -210,8 +213,8 @@ export function TripForm({ onSubmit, loading }: TripFormProps) {
         disabled={isDisabled}
         className={`w-full py-3.5 rounded-xl font-semibold text-sm transition-all duration-200 ${
           isDisabled
-            ? 'bg-slate-200 dark:bg-slate-700 text-slate-400 dark:text-slate-500 cursor-not-allowed'
-            : 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-500/25 active:scale-[0.98]'
+            ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+            : 'bg-[#4285F4] hover:bg-[#3367D6] text-white shadow-lg shadow-blue-500/25 active:scale-[0.98]'
         }`}
       >
         {loading ? (
