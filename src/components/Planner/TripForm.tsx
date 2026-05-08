@@ -1,9 +1,8 @@
 import { useState, useCallback } from 'react';
 import type { TripFormData } from '../../types/trip.types';
 import { validateTripForm } from '../../utils/validators';
-
-const INTEREST_OPTIONS = ['Food', 'Culture', 'Adventure', 'Shopping', 'Nature', 'Nightlife'];
-const CONSTRAINT_OPTIONS = ['Vegetarian', 'Low walking', 'Elderly-friendly', 'Budget-conscious'];
+import { INTEREST_OPTIONS, CONSTRAINT_OPTIONS } from '../../constants/categories';
+import { Footer } from '../Layout/Footer';
 
 interface TripFormProps {
   onSubmit: (data: TripFormData) => void;
@@ -229,5 +228,7 @@ export function TripForm({ onSubmit, loading }: TripFormProps) {
         )}
       </button>
     </form>
+    <Footer />
+    </div>
   );
 }
