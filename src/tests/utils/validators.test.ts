@@ -9,6 +9,7 @@ function makeValidForm(): TripFormData {
   dayAfter.setDate(dayAfter.getDate() + 3);
 
   return {
+    origin: 'Delhi',
     destination: 'Jaipur',
     startDate: tomorrow.toISOString().split('T')[0],
     endDate: dayAfter.toISOString().split('T')[0],
@@ -20,6 +21,14 @@ function makeValidForm(): TripFormData {
 }
 
 describe('validateTripForm', () => {
+  it('returns invalid with error for empty origin', () => {
+    const data = makeValidForm();
+    data.origin = '';
+    const result = validateTripForm(data);
+    expect(result.valid).toBe(false);
+    expect(result.errors.origin).toBeDefined();
+  });
+
   it('returns invalid with error for empty destination', () => {
     const data = makeValidForm();
     data.destination = '';

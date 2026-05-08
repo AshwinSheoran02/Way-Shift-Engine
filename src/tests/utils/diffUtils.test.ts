@@ -17,6 +17,7 @@ function makePlan(activities: { id: string; title: string; time: string; locatio
           description: 'Test description',
           category: 'culture' as const,
           durationMinutes: 60,
+          costINR: 0,
           mapsUrl: '',
         })),
       },

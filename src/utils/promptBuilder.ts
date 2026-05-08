@@ -13,6 +13,7 @@ export function buildPlanPrompt(formData: TripFormData): string {
   return `You are a travel planning AI. Generate a detailed ${days}-day trip plan for ${formData.destination}.
 
 Trip Details:
+- Starting Location (Origin): ${formData.origin}
 - Destination: ${formData.destination}
 - Start Date: ${formData.startDate}
 - End Date: ${formData.endDate}
@@ -21,7 +22,12 @@ Trip Details:
 - Interests: ${formData.interests.join(', ') || 'general sightseeing'}
 - Constraints: ${formData.constraints.join(', ') || 'none'}
 
-Generate exactly 4 activities per day. Each activity must have a unique ID in format "d{dayNumber}-a{activityNumber}" (e.g., "d1-a1", "d1-a2").
+Critical Instructions:
+1. Day 1 MUST start with travel from ${formData.origin} to ${formData.destination} (Flight/Train/Cab/Drive).
+2. The last day MUST end with travel back from ${formData.destination} to ${formData.origin}.
+3. Every day MUST include an "Accommodation" activity (Hotel/Stay) with a realistic cost (₹1,500 - ₹20,000+ depending on budget). NEVER return 0 cost for hotels.
+4. Include realistic inter-city travel expenses (Flight tickets, Train fares, Fuel, etc.).
+5. Generate exactly 5 activities per day (including travel and stay). Each activity must have a unique ID in format "d{dayNumber}-a{activityNumber}".
 
 Return ONLY a valid JSON object matching this exact schema. No markdown. No commentary. No backticks.
 
@@ -40,6 +46,7 @@ Return ONLY a valid JSON object matching this exact schema. No markdown. No comm
           "description": "string (2-3 sentences)",
           "category": "food" | "culture" | "adventure" | "rest" | "transport" | "shopping",
           "durationMinutes": number,
+          "costINR": number (0 if free),
           "mapsUrl": ""
         }
       ]
@@ -108,6 +115,7 @@ Return ONLY a valid JSON object matching this exact schema. No markdown. No comm
           "description": "string",
           "category": "food" | "culture" | "adventure" | "rest" | "transport" | "shopping",
           "durationMinutes": number,
+          "costINR": number (0 if free),
           "mapsUrl": ""
         }
       ]

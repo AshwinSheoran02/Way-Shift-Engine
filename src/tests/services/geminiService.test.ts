@@ -34,6 +34,7 @@ describe('parseGeminiResponse', () => {
 describe('buildPlanPrompt', () => {
   it('includes destination in the prompt', () => {
     const formData: TripFormData = {
+      origin: 'Delhi',
       destination: 'Manali',
       startDate: '2025-06-01',
       endDate: '2025-06-04',
@@ -50,6 +51,7 @@ describe('buildPlanPrompt', () => {
 
   it('includes interests in the prompt', () => {
     const formData: TripFormData = {
+      origin: 'Mumbai',
       destination: 'Delhi',
       startDate: '2025-06-01',
       endDate: '2025-06-03',

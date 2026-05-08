@@ -76,7 +76,13 @@ export const ActivityCard = memo(function ActivityCard({ activity, status, desti
           >
             📍 <span className="truncate max-w-[200px]">{activity.location}</span> <span className="text-xs">↗</span>
           </a>
-          <span className="text-xs text-gray-400">⏱ {activity.durationMinutes} min</span>
+          <div className="flex items-center gap-2 text-xs text-gray-500">
+            <span>⏱ {activity.durationMinutes} min</span>
+            <span>·</span>
+            <span className="font-medium text-gray-700">
+              {activity.costINR === 0 ? 'Free' : `₹${activity.costINR}`}
+            </span>
+          </div>
         </div>
 
         {/* Description */}

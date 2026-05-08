@@ -11,6 +11,11 @@ interface ValidationResult {
 export function validateTripForm(data: TripFormData): ValidationResult {
   const errors: Record<string, string> = {};
 
+  // Origin: required, min 2 chars
+  if (!data.origin || data.origin.trim().length < 2) {
+    errors.origin = 'Starting location must be at least 2 characters';
+  }
+
   // Destination: required, min 2 chars
   if (!data.destination || data.destination.trim().length < 2) {
     errors.destination = 'Destination must be at least 2 characters';

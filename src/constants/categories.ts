@@ -9,3 +9,6 @@ export const CATEGORY_EMOJI: Record<ActivityCategory, string> = {
   transport: '🚗',
   shopping: '🛍️',
 };
+
+export const INTEREST_OPTIONS = ['Food', 'Culture', 'Adventure', 'Shopping', 'Nature', 'Nightlife'];
+export const CONSTRAINT_OPTIONS = ['Vegetarian', 'Low walking', 'Elderly-friendly', 'Budget-conscious'];

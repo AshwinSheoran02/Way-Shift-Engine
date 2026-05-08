@@ -1,5 +1,6 @@
 import type { TripPlan } from '../../types/trip.types';
 import { DayColumn } from './DayColumn';
+import { Footer } from '../Layout/Footer';
 
 interface ItineraryViewProps {
   plan: TripPlan;
@@ -46,12 +47,14 @@ export function ItineraryView({ plan, changedActivityIds, removedActivityIds, ad
             key={day.dayNumber}
             day={day}
             destination={plan.destination}
+            dailyBudget={Math.round(plan.totalBudgetINR / plan.days.length)}
             changedActivityIds={changedActivityIds}
             removedActivityIds={removedActivityIds}
             addedActivityIds={addedActivityIds}
           />
         ))}
       </div>
+      <Footer />
     </section>
   );
 }

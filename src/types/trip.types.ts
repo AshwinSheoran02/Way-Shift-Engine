@@ -10,6 +10,7 @@ export interface Activity {
   description: string;
   category: ActivityCategory;
   durationMinutes: number;
+  costINR: number;
   mapsUrl: string;
 }
 
@@ -66,6 +67,7 @@ export interface ChatMessage {
 
 /** Form data for creating a new trip plan */
 export interface TripFormData {
+  origin: string;
   destination: string;
   startDate: string;
   endDate: string;

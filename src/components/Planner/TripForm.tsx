@@ -14,6 +14,7 @@ interface TripFormProps {
  */
 export function TripForm({ onSubmit, loading }: TripFormProps) {
   const [formData, setFormData] = useState<TripFormData>({
+    origin: '',
     destination: '',
     startDate: '',
     endDate: '',
@@ -52,10 +53,27 @@ export function TripForm({ onSubmit, loading }: TripFormProps) {
     onSubmit(formData);
   }, [formData, onSubmit]);
 
-  const isDisabled = !formData.destination.trim() || !formData.startDate || !formData.endDate || loading;
+  const isDisabled = !formData.origin.trim() || !formData.destination.trim() || !formData.startDate || !formData.endDate || loading;
 
   return (
+    <>
     <form onSubmit={handleSubmit} className="space-y-6 animate-fade-in">
+      {/* Starting Location */}
+      <div>
+        <label htmlFor="origin" className="block text-sm font-medium text-gray-700 mb-1.5">
+          Starting Location (Current City)
+        </label>
+        <input
+          id="origin"
+          type="text"
+          placeholder="e.g., Delhi, Mumbai, Bangalore..."
+          value={formData.origin}
+          onChange={(e) => handleChange('origin', e.target.value)}
+          className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#4285F4] focus:border-transparent text-sm"
+        />
+        {errors.origin && <p className="mt-1 text-xs text-[#EA4335]">{errors.origin}</p>}
+      </div>
+
       {/* Destination */}
       <div>
         <label htmlFor="destination" className="block text-sm font-medium text-gray-700 mb-1.5">
@@ -229,6 +247,6 @@ export function TripForm({ onSubmit, loading }: TripFormProps) {
       </button>
     </form>
     <Footer />
-    </div>
+    </>
   );
 }
