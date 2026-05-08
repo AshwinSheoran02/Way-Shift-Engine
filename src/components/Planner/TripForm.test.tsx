@@ -10,7 +10,7 @@ describe('TripForm', () => {
 
   it('has submit button disabled when destination is empty', () => {
     render(<TripForm onSubmit={() => {}} loading={false} />);
-    const submitButton = screen.getByRole('button', { name: /build my trip/i });
+    const submitButton = screen.getByRole('button', { name: /generate trip plan/i });
     expect(submitButton).toBeDisabled();
   });
 
@@ -26,6 +26,6 @@ describe('TripForm', () => {
 
   it('shows loading state when loading prop is true', () => {
     render(<TripForm onSubmit={() => {}} loading={true} />);
-    expect(screen.getByText(/Building your trip/i)).toBeInTheDocument();
+    expect(screen.getByText(/Crafting Itinerary/i)).toBeInTheDocument();
   });
 });

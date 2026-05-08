@@ -1,10 +1,6 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, lazy, Suspense } from 'react';
 import type { TripFormData, TripPlan, ReplanResult } from './types/trip.types';
 import { Header } from './components/Layout/Header';
-import { TripForm } from './components/Planner/TripForm';
-import { ChatInterface } from './components/Replanner/ChatInterface';
-import { ImportTrip } from './components/Replanner/ImportTrip';
-import { ItineraryView } from './components/ItineraryView/ItineraryView';
 import { useItinerary } from './hooks/useItinerary';
 import { useChat } from './hooks/useChat';
 import { useDisruption } from './hooks/useDisruption';
@@ -15,6 +11,13 @@ import { sanitizeInput } from './utils/sanitize';
 import { FALLBACK_TRIP } from './services/fallbackData';
 import { parseImportedTrip } from './services/importParser';
 import { trackTripGenerated, trackImportUsed } from './services/analyticsService';
+
+// Lazy load tab components for maximum efficiency
+const TripForm = lazy(() => import('./components/Planner/TripForm').then(m => ({ default: m.TripForm })));
+const ChatInterface = lazy(() => import('./components/Replanner/ChatInterface').then(m => ({ default: m.ChatInterface })));
+const ImportTrip = lazy(() => import('./components/Replanner/ImportTrip').then(m => ({ default: m.ImportTrip })));
+const ItineraryView = lazy(() => import('./components/ItineraryView/ItineraryView').then(m => ({ default: m.ItineraryView })));
+
 
 /**
  * Generates a readable text version of the trip plan for download.
@@ -146,82 +149,90 @@ export default function App() {
 
       {/* Main content */}
       <main className="w-full">
-        {/* Planner panel — wider, less side space */}
-        {mode === 'planner' && (
-          <div
-            role="tabpanel"
-            id="panel-planner"
-            aria-labelledby="tab-planner"
-            className="w-full max-w-4xl mx-auto px-4 py-6"
-          >
-            <div className="bg-white border border-gray-200 rounded-2xl p-6 sm:p-8 shadow-sm">
-              <div className="mb-6">
-                <h2 className="text-lg font-bold text-gray-900 mb-1">
-                  ✈️ Plan Your Trip
-                </h2>
-                <p className="text-sm text-gray-500">
-                  Tell us about your dream trip and we&apos;ll create a detailed itinerary.
-                </p>
-              </div>
-              <TripForm onSubmit={handleTripSubmit} loading={geminiLoading} />
-            </div>
+        <Suspense fallback={
+          <div className="flex items-center justify-center p-20">
+            <div className="typing-dot bg-[#4285F4]" />
+            <div className="typing-dot bg-[#34A853] mx-2" />
+            <div className="typing-dot bg-[#FBBC04]" />
           </div>
-        )}
-
-        {/* Replanner panel */}
-        {mode === 'replanner' && (
-          <div
-            role="tabpanel"
-            id="panel-replanner"
-            aria-labelledby="tab-replanner"
-          >
-            {!currentPlan ? (
-              <div className="w-full max-w-4xl mx-auto px-4 py-6 space-y-6">
-                <div className="bg-white border border-gray-200 rounded-2xl p-8 text-center shadow-sm animate-fade-in">
-                  <div className="text-5xl mb-4">🗺️</div>
-                  <h2 className="text-lg font-bold text-gray-900 mb-2">No trip loaded yet</h2>
-                  <p className="text-sm text-gray-500 mb-4">
-                    Create a trip in the Planner tab, or import an existing one below.
+        }>
+          {/* Planner panel — wider, less side space */}
+          {mode === 'planner' && (
+            <div
+              role="tabpanel"
+              id="panel-planner"
+              aria-labelledby="tab-planner"
+              className="w-full max-w-4xl mx-auto px-4 py-6"
+            >
+              <div className="bg-white border border-gray-200 rounded-2xl p-6 sm:p-8 shadow-sm">
+                <div className="mb-6">
+                  <h2 className="text-lg font-bold text-gray-900 mb-1">
+                    ✈️ Plan Your Trip
+                  </h2>
+                  <p className="text-sm text-gray-500">
+                    Tell us about your dream trip and we&apos;ll create a detailed itinerary.
                   </p>
-                  <button
-                    type="button"
-                    onClick={() => setMode('planner')}
-                    className="bg-[#4285F4] hover:bg-[#3367D6] text-white px-6 py-2.5 rounded-xl font-medium text-sm transition-colors shadow-lg"
-                  >
-                    ✈️ Plan a Trip
-                  </button>
                 </div>
-                <ImportTrip onImport={handleImport} loading={importLoading} />
+                <TripForm onSubmit={handleTripSubmit} loading={geminiLoading} />
               </div>
-            ) : (
-              /* Two-column: Chat + Itinerary — full width */
-              <div className="w-full grid grid-cols-1 lg:grid-cols-2">
-                {/* Left: Chat */}
-                <div className="h-screen overflow-y-auto border-r border-gray-200 flex flex-col">
-                  <div className="flex-1">
-                    <ChatInterface
-                      messages={messages}
-                      loading={chatLoading}
-                      onSendMessage={sendMessage}
-                    />
+            </div>
+          )}
+
+          {/* Replanner panel */}
+          {mode === 'replanner' && (
+            <div
+              role="tabpanel"
+              id="panel-replanner"
+              aria-labelledby="tab-replanner"
+            >
+              {!currentPlan ? (
+                <div className="w-full max-w-4xl mx-auto px-4 py-6 space-y-6">
+                  <div className="bg-white border border-gray-200 rounded-2xl p-8 text-center shadow-sm animate-fade-in">
+                    <div className="text-5xl mb-4">🗺️</div>
+                    <h2 className="text-lg font-bold text-gray-900 mb-2">No trip loaded yet</h2>
+                    <p className="text-sm text-gray-500 mb-4">
+                      Create a trip in the Planner tab, or import an existing one below.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => setMode('planner')}
+                      className="bg-[#4285F4] hover:bg-[#3367D6] text-white px-6 py-2.5 rounded-xl font-medium text-sm transition-colors shadow-lg"
+                    >
+                      ✈️ Plan a Trip
+                    </button>
                   </div>
                   <ImportTrip onImport={handleImport} loading={importLoading} />
                 </div>
+              ) : (
+                /* Two-column: Chat + Itinerary — full width */
+                <div className="w-full grid grid-cols-1 lg:grid-cols-2">
+                  {/* Left: Chat */}
+                  <div className="h-screen overflow-y-auto border-r border-gray-200 flex flex-col">
+                    <div className="flex-1">
+                      <ChatInterface
+                        messages={messages}
+                        loading={chatLoading}
+                        onSendMessage={sendMessage}
+                      />
+                    </div>
+                    <ImportTrip onImport={handleImport} loading={importLoading} />
+                  </div>
 
-                {/* Right: Itinerary */}
-                <div className="h-screen overflow-y-auto">
-                  <ItineraryView
-                    plan={currentPlan}
-                    changedActivityIds={changedActivityIds}
-                    removedActivityIds={removedActivityIds}
-                    addedActivityIds={addedActivityIds}
-                    onDownload={handleDownload}
-                  />
+                  {/* Right: Itinerary */}
+                  <div className="h-screen overflow-y-auto">
+                    <ItineraryView
+                      plan={currentPlan}
+                      changedActivityIds={changedActivityIds}
+                      removedActivityIds={removedActivityIds}
+                      addedActivityIds={addedActivityIds}
+                      onDownload={handleDownload}
+                    />
+                  </div>
                 </div>
-              </div>
-            )}
-          </div>
-        )}
+              )}
+            </div>
+          )}
+        </Suspense>
       </main>
     </div>
   );

@@ -1,8 +1,11 @@
 import type { TripFormData, TripPlan } from '../types/trip.types';
 
 /**
- * Builds the Gemini prompt for generating a new trip plan.
- * Instructs Gemini to return ONLY valid JSON matching TripPlan schema.
+ * Builds the Gemini prompt for generating a new multi-day trip plan.
+ * Instructs Gemini to return ONLY valid JSON matching the TripPlan schema.
+ * 
+ * @param formData User preferences from the planning form.
+ * @returns A structured prompt string for the Gemini API.
  */
 export function buildPlanPrompt(formData: TripFormData): string {
   const days = Math.ceil(
@@ -59,8 +62,12 @@ Return ONLY a valid JSON object matching this exact schema. No markdown. No comm
 }
 
 /**
- * Builds the Gemini prompt for replanning after a disruption.
- * Includes the current plan and the user's natural language disruption message.
+ * Builds the Gemini prompt for intelligently replanning after a disruption.
+ * Enforces surgical updates by asking the AI to reuse IDs for unaffected activities.
+ * 
+ * @param currentPlan The current JSON state of the trip.
+ * @param userMessage Natural language description of the disruption.
+ * @returns A structured prompt for the replanning task.
  */
 export function buildReplanPrompt(currentPlan: TripPlan, userMessage: string): string {
   return `You are a travel disruption recovery AI. A traveller has reported a disruption during their trip.
@@ -90,7 +97,10 @@ Return ONLY a valid JSON object matching this exact schema. No markdown. No comm
 }
 
 /**
- * Builds the Gemini prompt for parsing pasted plain-text trip into TripPlan JSON.
+ * Builds the Gemini prompt for parsing raw plain-text trip descriptions into JSON.
+ * 
+ * @param rawText Paste-pasted trip text from another source.
+ * @returns A prompt instructing Gemini to perform structured extraction.
  */
 export function buildImportPrompt(rawText: string): string {
   return `Parse the following trip description into a structured trip plan. Extract as much detail as possible.

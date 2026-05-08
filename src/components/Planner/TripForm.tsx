@@ -3,14 +3,18 @@ import type { TripFormData } from '../../types/trip.types';
 import { validateTripForm } from '../../utils/validators';
 import { INTEREST_OPTIONS, CONSTRAINT_OPTIONS } from '../../constants/categories';
 import { Footer } from '../Layout/Footer';
+import { EnergySelector, PillGroup } from './FormFields';
 
 interface TripFormProps {
+  /** Callback when form is submitted and valid */
   onSubmit: (data: TripFormData) => void;
+  /** Whether the trip is currently being generated */
   loading: boolean;
 }
 
 /**
- * Trip planning form. Light mode only with Google accent colors.
+ * Main entry form for trip planning.
+ * Designed with Google's Material aesthetics (Clean, Light, Dynamic).
  */
 export function TripForm({ onSubmit, loading }: TripFormProps) {
   const [formData, setFormData] = useState<TripFormData>({
@@ -27,12 +31,14 @@ export function TripForm({ onSubmit, loading }: TripFormProps) {
 
   const handleChange = useCallback((field: keyof TripFormData, value: string | number) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
-    setErrors((prev) => {
-      const next = { ...prev };
-      delete next[field];
-      return next;
-    });
-  }, []);
+    if (errors[field]) {
+      setErrors((prev) => {
+        const next = { ...prev };
+        delete next[field];
+        return next;
+      });
+    }
+  }, [errors]);
 
   const togglePill = useCallback((field: 'interests' | 'constraints', value: string) => {
     setFormData((prev) => ({
@@ -57,7 +63,7 @@ export function TripForm({ onSubmit, loading }: TripFormProps) {
 
   return (
     <>
-    <form onSubmit={handleSubmit} className="space-y-6 animate-fade-in">
+    <form onSubmit={handleSubmit} className="space-y-6 animate-fade-in" noValidate>
       {/* Starting Location */}
       <div>
         <label htmlFor="origin" className="block text-sm font-medium text-gray-700 mb-1.5">
@@ -69,9 +75,9 @@ export function TripForm({ onSubmit, loading }: TripFormProps) {
           placeholder="e.g., Delhi, Mumbai, Bangalore..."
           value={formData.origin}
           onChange={(e) => handleChange('origin', e.target.value)}
-          className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#4285F4] focus:border-transparent text-sm"
+          className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#4285F4] focus:border-transparent text-sm transition-all"
         />
-        {errors.origin && <p className="mt-1 text-xs text-[#EA4335]">{errors.origin}</p>}
+        {errors.origin && <p className="mt-1 text-xs text-[#EA4335] font-medium">{errors.origin}</p>}
       </div>
 
       {/* Destination */}
@@ -85,9 +91,9 @@ export function TripForm({ onSubmit, loading }: TripFormProps) {
           placeholder="e.g., Jaipur, Goa, Manali..."
           value={formData.destination}
           onChange={(e) => handleChange('destination', e.target.value)}
-          className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#4285F4] focus:border-transparent text-sm"
+          className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#4285F4] focus:border-transparent text-sm transition-all"
         />
-        {errors.destination && <p className="mt-1 text-xs text-[#EA4335]">{errors.destination}</p>}
+        {errors.destination && <p className="mt-1 text-xs text-[#EA4335] font-medium">{errors.destination}</p>}
       </div>
 
       {/* Dates */}
@@ -101,9 +107,9 @@ export function TripForm({ onSubmit, loading }: TripFormProps) {
             type="date"
             value={formData.startDate}
             onChange={(e) => handleChange('startDate', e.target.value)}
-            className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#4285F4] focus:border-transparent text-sm"
+            className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#4285F4] focus:border-transparent text-sm transition-all"
           />
-          {errors.startDate && <p className="mt-1 text-xs text-[#EA4335]">{errors.startDate}</p>}
+          {errors.startDate && <p className="mt-1 text-xs text-[#EA4335] font-medium">{errors.startDate}</p>}
         </div>
         <div>
           <label htmlFor="endDate" className="block text-sm font-medium text-gray-700 mb-1.5">
@@ -114,16 +120,16 @@ export function TripForm({ onSubmit, loading }: TripFormProps) {
             type="date"
             value={formData.endDate}
             onChange={(e) => handleChange('endDate', e.target.value)}
-            className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#4285F4] focus:border-transparent text-sm"
+            className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#4285F4] focus:border-transparent text-sm transition-all"
           />
-          {errors.endDate && <p className="mt-1 text-xs text-[#EA4335]">{errors.endDate}</p>}
+          {errors.endDate && <p className="mt-1 text-xs text-[#EA4335] font-medium">{errors.endDate}</p>}
         </div>
       </div>
 
       {/* Budget Slider */}
-      <div>
-        <label htmlFor="budget" className="block text-sm font-medium text-gray-700 mb-1.5">
-          Budget per day: <span className="text-[#4285F4] font-semibold">₹{formData.budgetPerDayINR.toLocaleString('en-IN')}</span>
+      <div className="bg-blue-50/30 p-4 rounded-2xl border border-blue-100/50">
+        <label htmlFor="budget" className="block text-sm font-medium text-gray-700 mb-3">
+          Budget per day: <span className="text-[#4285F4] font-bold">₹{formData.budgetPerDayINR.toLocaleString('en-IN')}</span>
         </label>
         <input
           id="budget"
@@ -133,116 +139,60 @@ export function TripForm({ onSubmit, loading }: TripFormProps) {
           step={500}
           value={formData.budgetPerDayINR}
           onChange={(e) => handleChange('budgetPerDayINR', Number(e.target.value))}
-          className="w-full h-2 rounded-lg cursor-pointer"
+          className="w-full h-2 rounded-lg cursor-pointer accent-[#4285F4]"
         />
-        <div className="flex justify-between text-xs text-gray-400 mt-1">
+        <div className="flex justify-between text-[10px] text-gray-400 mt-2 font-medium">
           <span>₹1,000</span>
           <span>₹50,000</span>
         </div>
-        {errors.budgetPerDayINR && <p className="mt-1 text-xs text-[#EA4335]">{errors.budgetPerDayINR}</p>}
+        {errors.budgetPerDayINR && <p className="mt-1 text-xs text-[#EA4335] font-medium">{errors.budgetPerDayINR}</p>}
       </div>
 
       {/* Energy Level */}
-      <fieldset>
-        <legend className="block text-sm font-medium text-gray-700 mb-2">
-          Energy Level
-        </legend>
-        <div className="flex gap-3">
-          {(['relaxed', 'active', 'intense'] as const).map((level) => {
-            const colors = {
-              relaxed: { active: 'bg-[#34A853] border-[#34A853]', emoji: '😌' },
-              active: { active: 'bg-[#4285F4] border-[#4285F4]', emoji: '🚶' },
-              intense: { active: 'bg-[#EA4335] border-[#EA4335]', emoji: '🏃' },
-            };
-            return (
-              <label
-                key={level}
-                className={`flex-1 text-center py-2.5 rounded-xl cursor-pointer text-sm font-medium transition-all duration-200 border ${
-                  formData.energyLevel === level
-                    ? `${colors[level].active} text-white shadow-md`
-                    : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'
-                }`}
-              >
-                <input
-                  type="radio"
-                  name="energyLevel"
-                  value={level}
-                  checked={formData.energyLevel === level}
-                  onChange={() => handleChange('energyLevel', level)}
-                  className="sr-only"
-                />
-                {colors[level].emoji} {level.charAt(0).toUpperCase() + level.slice(1)}
-              </label>
-            );
-          })}
-        </div>
-      </fieldset>
+      <EnergySelector 
+        selectedValue={formData.energyLevel} 
+        onChange={(val) => handleChange('energyLevel', val)} 
+      />
 
       {/* Interests */}
-      <fieldset>
-        <legend className="block text-sm font-medium text-gray-700 mb-2">
-          Interests
-        </legend>
-        <div className="flex flex-wrap gap-2">
-          {INTEREST_OPTIONS.map((interest) => (
-            <button
-              key={interest}
-              type="button"
-              onClick={() => togglePill('interests', interest)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
-                formData.interests.includes(interest)
-                  ? 'bg-[#4285F4] text-white shadow-md'
-                  : 'bg-white text-gray-600 border border-gray-200 hover:border-[#4285F4] hover:text-[#4285F4]'
-              }`}
-            >
-              {interest}
-            </button>
-          ))}
-        </div>
-      </fieldset>
+      <PillGroup
+        label="Interests"
+        options={INTEREST_OPTIONS}
+        selectedValues={formData.interests}
+        onToggle={(val) => togglePill('interests', val)}
+        activeClass="bg-[#4285F4] text-white"
+        hoverClass="hover:border-[#4285F4] hover:text-[#4285F4]"
+      />
 
       {/* Constraints */}
-      <fieldset>
-        <legend className="block text-sm font-medium text-gray-700 mb-2">
-          Constraints
-        </legend>
-        <div className="flex flex-wrap gap-2">
-          {CONSTRAINT_OPTIONS.map((constraint) => (
-            <button
-              key={constraint}
-              type="button"
-              onClick={() => togglePill('constraints', constraint)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
-                formData.constraints.includes(constraint)
-                  ? 'bg-[#FBBC04] text-gray-900 shadow-md'
-                  : 'bg-white text-gray-600 border border-gray-200 hover:border-[#FBBC04] hover:text-gray-900'
-              }`}
-            >
-              {constraint}
-            </button>
-          ))}
-        </div>
-      </fieldset>
+      <PillGroup
+        label="Constraints"
+        options={CONSTRAINT_OPTIONS}
+        selectedValues={formData.constraints}
+        onToggle={(val) => togglePill('constraints', val)}
+        activeClass="bg-[#FBBC04] text-gray-900"
+        hoverClass="hover:border-[#FBBC04] hover:text-gray-900"
+      />
 
-      {/* Submit */}
+      {/* Submit Button */}
       <button
         type="submit"
         disabled={isDisabled}
-        className={`w-full py-3.5 rounded-xl font-semibold text-sm transition-all duration-200 ${
+        className={`w-full py-4 rounded-2xl font-bold text-sm transition-all duration-300 ${
           isDisabled
             ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-            : 'bg-[#4285F4] hover:bg-[#3367D6] text-white shadow-lg shadow-blue-500/25 active:scale-[0.98]'
+            : 'bg-[#4285F4] hover:bg-[#3367D6] text-white shadow-xl shadow-blue-500/20 active:scale-[0.98]'
         }`}
       >
         {loading ? (
-          <span className="flex items-center justify-center gap-2">
-            <span className="typing-dot" />
-            <span className="typing-dot" />
-            <span className="typing-dot" />
-            <span className="ml-2">Building your trip...</span>
+          <span className="flex items-center justify-center gap-3">
+            <span className="w-2 h-2 bg-white rounded-full animate-bounce [animation-delay:-0.3s]" />
+            <span className="w-2 h-2 bg-white rounded-full animate-bounce [animation-delay:-0.15s]" />
+            <span className="w-2 h-2 bg-white rounded-full animate-bounce" />
+            <span className="ml-2">Crafting Itinerary...</span>
           </span>
         ) : (
-          '🚀 Build My Trip'
+          '🚀 Generate Trip Plan'
         )}
       </button>
     </form>

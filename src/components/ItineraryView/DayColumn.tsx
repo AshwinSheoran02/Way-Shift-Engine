@@ -1,3 +1,4 @@
+import { memo, useMemo } from 'react';
 import type { Day } from '../../types/trip.types';
 import { ActivityCard } from './ActivityCard';
 import { buildDayRouteUrl } from '../../services/mapsService';
@@ -12,7 +13,7 @@ interface DayColumnProps {
   addedActivityIds: string[];
 }
 
-export function DayColumn({ day, destination, dailyBudget, changedActivityIds, removedActivityIds, addedActivityIds }: DayColumnProps) {
+export const DayColumn = memo(({ day, destination, dailyBudget, changedActivityIds, removedActivityIds, addedActivityIds }: DayColumnProps) => {
   const getStatus = (activityId: string) => {
     if (changedActivityIds.includes(activityId)) return 'changed' as const;
     if (addedActivityIds.includes(activityId)) return 'added' as const;
@@ -20,17 +21,20 @@ export function DayColumn({ day, destination, dailyBudget, changedActivityIds, r
     return 'unchanged' as const;
   };
 
-  const dayTotal = day.activities.reduce((sum, a) => sum + a.costINR, 0);
-  const budgetRatio = dayTotal / dailyBudget;
-  
-  // Logic: < 75% Green, 75-90% Yellow, > 90% Red
-  const budgetColor = budgetRatio < 0.75 
-    ? 'text-[#34A853]' 
-    : budgetRatio <= 0.9 
-      ? 'text-[#FBBC04]' 
-      : 'text-[#EA4335]';
+  const { dayTotal, budgetColor, routeUrl } = useMemo(() => {
+    const total = day.activities.reduce((sum, a) => sum + a.costINR, 0);
+    const ratio = total / dailyBudget;
+    
+    const color = ratio < 0.75 
+      ? 'text-[#34A853]' 
+      : ratio <= 0.9 
+        ? 'text-[#FBBC04]' 
+        : 'text-[#EA4335]';
 
-  const routeUrl = buildDayRouteUrl(day.activities.map(a => a.location), destination);
+    const url = buildDayRouteUrl(day.activities.map(a => a.location), destination);
+    
+    return { dayTotal: total, budgetColor: color, routeUrl: url };
+  }, [day.activities, dailyBudget, destination]);
 
   return (
     <div className="animate-slide-up">
@@ -53,6 +57,7 @@ export function DayColumn({ day, destination, dailyBudget, changedActivityIds, r
               target="_blank"
               rel="noopener noreferrer"
               className="text-[9px] font-bold text-[#4285F4] hover:underline flex items-center gap-1"
+              aria-label={`Open Google Maps route for Day ${day.dayNumber}`}
             >
               🗺️ Open Day Route
             </a>
@@ -82,4 +87,4 @@ export function DayColumn({ day, destination, dailyBudget, changedActivityIds, r
       </div>
     </div>
   );
-}
+});

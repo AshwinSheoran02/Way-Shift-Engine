@@ -11,6 +11,25 @@ Wayshift is a next-generation travel itinerary generator and disruption recovery
 
 ## 🧠 Approach and Logic
 Wayshift moves beyond static documents. Its core logic relies on **Strict Structured JSON Parsing** with Gemini. 
+
+## Architecture Diagram
+
+```mermaid
+graph TD
+    UI[UI Layer: React + Tailwind]
+    Hooks[Hooks & State: useChat, useItinerary]
+    Gemini[Gemini AI: Surgical Replanning Engine]
+    Diff[Diff Engine: JSON Delta Update]
+    Google[Google Services: Maps, Analytics, Firebase]
+
+    UI --> Hooks
+    Hooks --> Gemini
+    Gemini --> Diff
+    Diff --> Hooks
+    Hooks --> Google
+    Google --> UI
+```
+
 1. **Multi-Stop Logistics**: Unlike basic planners, Wayshift calculates travel from your **Origin City** to the destination, including flights, trains, and cabs.
 2. **Surgical Replanning**: During disruptions, the engine performs an intelligent JSON delta update. It doesn't regenerate the whole trip; it surgically modifies only affected activities (e.g., shifting dinner if a flight is delayed) while maintaining budget integrity.
 3. **Budget Consciousness**: Every activity has a realistic INR cost. The engine tracks daily spend against a user-defined budget, using semantic color-coding to warn of overspending.

@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import type { TripPlan } from '../../types/trip.types';
 import { DayColumn } from './DayColumn';
 import { Footer } from '../Layout/Footer';
@@ -10,7 +11,7 @@ interface ItineraryViewProps {
   onDownload?: () => void;
 }
 
-export function ItineraryView({ plan, changedActivityIds, removedActivityIds, addedActivityIds, onDownload }: ItineraryViewProps) {
+export const ItineraryView = memo(({ plan, changedActivityIds, removedActivityIds, addedActivityIds, onDownload }: ItineraryViewProps) => {
   return (
     <section aria-live="polite" aria-label="Trip itinerary">
       {/* Sticky header */}
@@ -57,4 +58,4 @@ export function ItineraryView({ plan, changedActivityIds, removedActivityIds, ad
       <Footer />
     </section>
   );
-}
+});

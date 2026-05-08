@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { memo, useMemo } from 'react';
 import type { ReplanResult, TripPlan, Activity } from '../../types/trip.types';
 import { CATEGORY_EMOJI } from '../../constants/categories';
 
@@ -7,17 +7,24 @@ interface DiffViewProps {
   previousPlan?: TripPlan;
 }
 
-export function DiffView({ replanResult, previousPlan }: DiffViewProps) {
+/**
+ * Visualizes the difference between the previous plan and the replanned version.
+ * Highlights added, modified, and removed activities.
+ */
+export const DiffView = memo(({ replanResult, previousPlan }: DiffViewProps) => {
   const { updatedPlan, changedActivityIds, removedActivityIds, addedActivityIds } = replanResult;
 
-  const affectedActivities = updatedPlan.days.flatMap((day) =>
-    day.activities
-      .filter((a) => changedActivityIds.includes(a.id) || addedActivityIds.includes(a.id))
-      .map((a) => ({
-        ...a,
-        dayNumber: day.dayNumber,
-        status: changedActivityIds.includes(a.id) ? 'changed' as const : 'added' as const,
-      }))
+  const affectedActivities = useMemo(() => 
+    updatedPlan.days.flatMap((day) =>
+      day.activities
+        .filter((a) => changedActivityIds.includes(a.id) || addedActivityIds.includes(a.id))
+        .map((a) => ({
+          ...a,
+          dayNumber: day.dayNumber,
+          status: changedActivityIds.includes(a.id) ? 'changed' as const : 'added' as const,
+        }))
+    ),
+    [updatedPlan, changedActivityIds, addedActivityIds]
   );
 
   const previousActivityMap = useMemo(() => {
@@ -29,14 +36,17 @@ export function DiffView({ replanResult, previousPlan }: DiffViewProps) {
     return map;
   }, [previousPlan]);
 
-  const removedItems = removedActivityIds.map((id) => {
-    const activity = previousActivityMap.get(id);
-    return {
-      id,
-      title: activity?.title ?? `Activity ${id}`,
-      status: 'removed' as const,
-    };
-  });
+  const removedItems = useMemo(() => 
+    removedActivityIds.map((id) => {
+      const activity = previousActivityMap.get(id);
+      return {
+        id,
+        title: activity?.title ?? `Activity ${id}`,
+        status: 'removed' as const,
+      };
+    }),
+    [removedActivityIds, previousActivityMap]
+  );
 
   if (affectedActivities.length === 0 && removedItems.length === 0) return null;
 
@@ -88,4 +98,4 @@ export function DiffView({ replanResult, previousPlan }: DiffViewProps) {
       </div>
     </div>
   );
-}
+});
