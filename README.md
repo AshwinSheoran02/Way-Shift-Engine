@@ -1,133 +1,102 @@
-# Wayshift — Travel Resilience Engine
+# ✈️ Wayshift — Travel Resilience Engine
 
-> **Plan once. Replan instantly. Understand why.**
+Wayshift is a next-generation travel itinerary generator and disruption recovery engine. It was built specifically for the reality of travel: **things change**. 
 
-A constraint-aware travel disruption recovery engine built with React, TypeScript, and Google Gemini AI.
+**Live Deployment:** [https://wayshift-engine.web.app](https://wayshift-engine.web.app)
 
 ---
 
-## Challenge Vertical
+## 🎯 Challenge Vertical
+**Travel Planning and Experience Engine** — plan trips dynamically with preferences, constraints, and real-time updates.
 
-Travel Planning and Experience Engine
+## 🚨 Problem Statement
+Standard travel planners treat itineraries as static documents. If your flight is delayed by 4 hours, or if it starts pouring rain during your planned outdoor hike, a static itinerary breaks down completely. Travelers are forced to manually research alternatives, recalculate travel times, and frantically re-adjust their day on the fly. 
 
-## Problem Statement
+## 💡 Solution Overview
+Wayshift solves this by introducing a **"Replanner" chat interface** powered by Gemini 2.5 Flash Lite. After generating a constraint-aware itinerary, users can simply tell the AI about a disruption in plain English (e.g., *"My flight is delayed by 2 hours"*, or *"It's pouring rain outside"*). 
 
-Most AI travel tools generate trips. None of them handle disruption. Real travel rarely goes as planned — flights delay, it rains, budgets shrink, travellers get tired. Wayshift solves the second problem: what happens after the plan breaks.
+The engine instantly calculates the impact of the disruption and **surgically updates** only the affected parts of the itinerary, leaving the rest untouched. 
 
-## Solution Overview
+## 🔄 Why this is Dynamic
+Unlike traditional "regenerate everything" AI tools, Wayshift performs an intelligent JSON diffing process. 
+When a disruption occurs:
+1. It flags modified activities with a `⚡ Modified` badge.
+2. It flags newly added backup plans with an `+ Added` badge.
+3. It clearly strikes through `✕ Removed` activities.
+4. It provides an expandable **Explanation Panel** detailing exactly *why* the AI made those specific decisions based on the disruption.
 
-Wayshift is a constraint-aware travel disruption recovery engine with two modes:
+## 🚶 User Journey
+1. **Planning Mode:** The user enters a destination, dates, exact budget, energy levels, and specific constraints (e.g. Vegetarian, Elderly-friendly).
+2. **Review:** The engine creates a precise day-by-day itinerary. Every activity has exact times, durations, and an inline Google Maps integration.
+3. **Disruption:** The user encounters an issue (e.g., they get tired, a venue is closed, or weather changes).
+4. **Replanning:** The user chats with the AI in the left panel. The AI pushes a dynamic diff update to the itinerary on the right.
+5. **Save:** The user clicks "Save Plan" to download their finalized or newly-replanned itinerary as a `.txt` file.
 
-- **Planner**: Generate a structured day-by-day itinerary from preferences (destination, dates, budget, energy level, interests)
-- **Replanner**: A natural-language chatbot that detects disruptions and surgically repairs the plan — showing exactly what changed and why
+## 🧠 Approach and Logic
+The core logic relies on **Strict Structured JSON Parsing** using Gemini.
+- We pass explicit TypeScript schemas to Gemini and enforce JSON-only responses.
+- During replanning, we feed the AI the *current* JSON state and the natural language disruption. We instruct it to return an updated JSON state along with arrays of `changedActivityIds`, `addedActivityIds`, and `removedActivityIds`.
+- The React frontend computes the visual diffs based on these arrays, allowing us to highlight the exact delta without full-page re-renders.
 
-## Why This Is Dynamic
+## 🤔 Assumptions Made
+- **Fallback Data:** We assume the user may run out of API quota or face network issues. The app includes graceful degradation to hardcoded fallback data if the API fails, ensuring the UI remains testable.
+- **Connectivity:** We assume users have an active internet connection to load the inline Google Maps iframe embeds.
+- **API Key Security:** For the scope of this hackathon, the frontend uses Vite's `.env` system. We assume that for a true production rollout, the Gemini API calls would be proxied through a lightweight backend (like Firebase Functions or Cloud Run) to conceal the API key from the client.
 
-- **Natural-language disruption detection**: Users type disruptions in plain English ("my flight is delayed by 2 hours") and Wayshift automatically identifies the disruption type from 12 categories
-- **Surgical replanning**: Only affected activities are changed — the rest of the itinerary stays intact, unlike generic AI regeneration
-- **Visual diff with explainability**: A colour-coded diff view shows modified (amber), added (green), and removed (red) activities, with a reasoning panel explaining every change in plain English
+## 🌐 Google Services Used
+- **Google Gemini 2.5 Flash Lite**: Powers the core itinerary generation, unstructured text parsing, and disruption diffing logic via the REST API.
+- **Google Maps**: Every single activity tile automatically generates a precise Google Maps Search URL and embeds an interactive `iframe` of the specific venue.
+- **Firebase Hosting**: The entire SPA is deployed globally via Firebase.
 
-## User Journey
+## 🔒 Security Considerations
+- **No Hardcoded Secrets**: The API key is strictly loaded via `.env.local` and is not committed to the repository.
+- **Sanitization**: All user inputs from the chat and planning forms are sanitized to strip potentially malicious scripts or HTML before being passed to the Gemini prompt.
+- **No Dangerous HTML**: The app strictly avoids `dangerouslySetInnerHTML`, relying on React's safe rendering pipeline.
+- **Secure Links**: All outbound links use `target="_blank" rel="noopener noreferrer"`.
 
-1. Enter destination, dates, budget, energy level, and interests
-2. Wayshift generates a structured itinerary via Google Gemini
-3. Switch to the Replanner tab
-4. Type a disruption in plain English: "My flight is delayed by 2 hours"
-5. Wayshift detects the disruption type and calls Gemini to replan only affected activities
-6. A diff view shows what changed: modified, added, and removed activities
-7. An explainability panel shows why each change was made
-8. Every activity links to Google Maps for navigation
+## ♿ Accessibility Considerations
+- **Screen Reader Support**: All form inputs have explicit `htmlFor` labels. The chat input has an `aria-label`.
+- **Dynamic Updates**: The itinerary section uses `aria-live="polite"` so screen readers announce when the AI pushes a new trip update.
+- **Color Contrast & Focus**: The app uses official Google brand colors (`#4285F4`, `#EA4335`, etc.) against a high-contrast white background. All interactive elements have visible `focus:ring` states.
+- **Semantic Badging**: Diffs are not communicated through color alone. They use explicit text labels (`Modified`, `Added`, `Removed`) alongside colors.
 
-## Approach and Logic
+## 🧪 Testing
+The application includes a comprehensive Vitest testing suite covering:
+- **Validators:** Ensuring form inputs meet minimum logical requirements (e.g., Start Date < End Date).
+- **Sanitization:** Verifying malicious inputs are stripped.
+- **Diffing Logic:** Testing the custom diff array generation.
+- **API Fallbacks:** Mocking Gemini responses and testing the fallback behavior.
 
-Wayshift uses a **two-prompt Gemini architecture**:
-
-1. **Plan Prompt**: Takes trip preferences and generates a full `TripPlan` JSON with typed activities, categories, and durations
-2. **Replan Prompt**: Takes the existing plan + user's disruption message, detects the `DisruptionIntent`, and returns a `ReplanResult` with surgical changes
-
-The diff is computed client-side by comparing activity IDs between old and new plans — detecting changed (same ID, different content), removed (ID missing from new plan), and added (new IDs) activities.
-
-**Fallback system**: When no API key is configured or Gemini fails, the app loads comprehensive hardcoded data for a 3-day Jaipur trip with three pre-built replan scenarios (rain, flight delay, exhaustion). This ensures the app is always functional for demo purposes.
-
-## Assumptions Made
-
-- Works fully with demo data if `VITE_GEMINI_API_KEY` is missing
-- No real-time traffic or weather data — disruptions are entered by the user
-- Google Maps links are search URLs — no billing or Maps API key required
-- Session-only — no data persists after page reload
-- Optimised for Indian travel context (INR budget, Indian destinations as defaults)
-
-## Google Services Used
-
-| Service | How Used |
-|---------|----------|
-| Gemini 1.5 Flash | Trip generation, disruption detection, surgical replanning, import parsing |
-| Google Maps Search URLs | Every activity links to Google Maps search for that location |
-| Google Maps Embed API | Day-level map embed in the MapView component |
-| Firebase Hosting | Production deployment |
-
-## Security Considerations
-
-- API key stored in `.env` only, never committed (`.env` is in `.gitignore`)
-- All user inputs sanitised via `sanitizeInput()` before entering Gemini prompts
-- No personal data collected or transmitted beyond Gemini API calls
-- No `dangerouslySetInnerHTML` used anywhere
-- External links use `rel="noopener noreferrer"`
-- Content Security Policy meta tag in `index.html`
-
-## Accessibility Considerations
-
-- All form inputs have associated `<label htmlFor>` or `aria-label` attributes
-- Itinerary section uses `aria-live="polite"` for screen reader announcements
-- Diff view communicates changes by text badges (⚡ Modified, + Added, ✕ Removed), not colour alone
-- Mode toggle uses `role="tablist"` and `role="tab"` with `aria-selected`
-- ExplainPanel uses native `<details>/<summary>` for keyboard accessibility
-- Fully keyboard navigable with visible focus rings
-- Responsive layout: single column on mobile, two-column on desktop
-
-## Testing
-
-Run tests:
-
+To run the test suite:
 ```bash
 npm run test
 ```
 
-Tests cover:
-- **diffUtils**: Identical plans, changed/removed/added activity detection
-- **validators**: Destination, dates, budget validation
-- **sanitize**: HTML stripping, length limiting, passthrough
-- **geminiService**: JSON parsing, markdown fence stripping, error handling, prompt builders
-- **TripForm**: Rendering, disabled state, loading state
+## 💻 Local Setup
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/AshwinSheoran02/Way-Shift-Engine.git
+   cd Way-Shift-Engine
+   ```
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Set up your environment variables:
+   - Create a `.env.local` file in the root directory.
+   - Add your Gemini API key:
+     ```env
+     VITE_GEMINI_API_KEY=your_api_key_here
+     ```
+4. Start the development server:
+   ```bash
+   npm run dev
+   ```
 
-## Local Setup
-
-```bash
-git clone <repo-url>
-cd Way-Shift-Engine
-npm install
-cp .env.example .env
-# Edit .env and add your VITE_GEMINI_API_KEY
-npm run dev
-```
-
-The app works without an API key using built-in demo data.
-
-## Deployment
-
+## 🚀 Deployment
+The application is built using Vite and deployed to Firebase Hosting.
+To build for production locally:
 ```bash
 npm run build
-firebase login
-firebase init hosting   # set public dir to dist, SPA: yes
-firebase deploy
 ```
-
-Alternative: `npx vercel --prod`
-
-## Future Scope
-
-- Real-time weather API integration for automatic rain detection
-- Saved trips via Firebase Firestore
-- Multi-language support via Google Translate API
-- Voice input for disruptions via Web Speech API
-- Collaborative trip planning with real-time sync
+The optimized bundle will be generated in the `/dist` directory.

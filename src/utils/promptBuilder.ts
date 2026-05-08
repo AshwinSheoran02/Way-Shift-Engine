@@ -8,7 +8,7 @@ export function buildPlanPrompt(formData: TripFormData): string {
   const days = Math.ceil(
     (new Date(formData.endDate).getTime() - new Date(formData.startDate).getTime()) /
       (1000 * 60 * 60 * 24)
-  );
+  ) + 1;
 
   return `You are a travel planning AI. Generate a detailed ${days}-day trip plan for ${formData.destination}.
 

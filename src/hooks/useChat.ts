@@ -83,11 +83,16 @@ export function useChat(
     setMessages((prev) => [...prev, assistantMessage]);
   }, [currentPlan, onReplan, callWithFallback]);
 
+  const clearMessages = useCallback(() => {
+    setMessages([]);
+  }, []);
+
   return {
     messages,
     loading,
     error,
     clearError,
     sendMessage,
+    clearMessages,
   };
 }

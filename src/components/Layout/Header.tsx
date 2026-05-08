@@ -14,9 +14,9 @@ export function Header({ mode, onModeChange, hasPlan }: HeaderProps) {
       {/* Google color bar at very top */}
       <div className="google-color-bar" />
 
-      <header className="w-full flex items-center justify-between px-6 py-3 border-b border-gray-200 bg-white sticky top-0 z-50">
+      <header className="w-full grid grid-cols-3 items-center px-6 py-3 border-b border-gray-200 bg-white sticky top-0 z-50">
         {/* Left: Logo + wordmark */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 justify-self-start">
           <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
             <rect width="32" height="32" rx="8" fill="#4285F4"/>
             <path d="M8 16 C8 10, 16 6, 24 10" stroke="white" strokeWidth="2.5" strokeLinecap="round" fill="none"/>
@@ -31,7 +31,7 @@ export function Header({ mode, onModeChange, hasPlan }: HeaderProps) {
         </div>
 
         {/* Center: Tab buttons */}
-        <div role="tablist" aria-label="Application mode" className="flex bg-gray-100 rounded-lg p-1 gap-1">
+        <div role="tablist" aria-label="Application mode" className="flex bg-gray-100 rounded-lg p-1 gap-1 justify-self-center">
           <button
             role="tab"
             id="tab-planner"
@@ -64,7 +64,7 @@ export function Header({ mode, onModeChange, hasPlan }: HeaderProps) {
         </div>
 
         {/* Right: Powered by Gemini badge */}
-        <div className="flex items-center gap-1.5 text-xs text-gray-400">
+        <div className="flex items-center gap-1.5 text-xs text-gray-400 justify-self-end">
           <span>Powered by</span>
           <span className="font-semibold text-[#4285F4]">Gemini</span>
         </div>

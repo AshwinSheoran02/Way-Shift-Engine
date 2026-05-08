@@ -68,7 +68,7 @@ export default function App() {
     applyReplan(result);
   }, [updatePlan, applyReplan]);
 
-  const { messages, loading: chatLoading, sendMessage } = useChat(currentPlan, handleReplan);
+  const { messages, loading: chatLoading, sendMessage, clearMessages } = useChat(currentPlan, handleReplan);
 
   const handleTripSubmit = useCallback(async (formData: TripFormData) => {
     const sanitizedData: TripFormData = {
@@ -91,6 +91,7 @@ export default function App() {
 
     setPlan(result);
     clearDisruption();
+    clearMessages();
     setShowFallbackBanner(usedFallback);
     if (usedFallback && errorMsg) {
       setImportWarning(`API Error: ${errorMsg}`);
@@ -98,7 +99,7 @@ export default function App() {
       setImportWarning(null);
     }
     setMode('replanner');
-  }, [callWithFallback, setPlan, clearDisruption]);
+  }, [callWithFallback, setPlan, clearDisruption, clearMessages]);
 
   const handleImport = useCallback(async (rawText: string) => {
     setImportLoading(true);
@@ -106,10 +107,11 @@ export default function App() {
     const { plan, warning } = await parseImportedTrip(rawText);
     setPlan(plan);
     clearDisruption();
+    clearMessages();
     setImportWarning(warning ?? null);
     setImportLoading(false);
     setShowFallbackBanner(!!warning);
-  }, [setPlan, clearDisruption]);
+  }, [setPlan, clearDisruption, clearMessages]);
 
   /** Download the current plan as a .txt file */
   const handleDownload = useCallback(() => {
