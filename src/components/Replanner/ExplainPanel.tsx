@@ -14,8 +14,8 @@ export function ExplainPanel({ replanResult }: ExplainPanelProps) {
   const label = DISRUPTION_LABELS[disruptionDetected];
 
   return (
-    <details className="glass rounded-xl overflow-hidden group">
-      <summary className="px-4 py-3 cursor-pointer text-sm font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors flex items-center justify-between list-none">
+    <details className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden group">
+      <summary className="px-4 py-3 cursor-pointer text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors flex items-center justify-between list-none">
         <span>💡 Why did Wayshift change this?</span>
         <svg
           className="w-4 h-4 transition-transform duration-200 group-open:rotate-180"
@@ -30,15 +30,15 @@ export function ExplainPanel({ replanResult }: ExplainPanelProps) {
 
       <div className="px-4 pb-4 space-y-3 animate-fade-in">
         {/* Disruption type badge */}
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[var(--color-bg-elevated)] border border-white/5">
-          <span className="w-2 h-2 rounded-full bg-[var(--color-diff-changed)]" />
-          <span className="text-xs font-medium text-[var(--color-text-secondary)]">
-            Disruption detected: <span className="text-[var(--color-warning-text)]">{label}</span>
+        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600">
+          <span className="w-2 h-2 rounded-full bg-amber-400" />
+          <span className="text-xs font-medium text-slate-600 dark:text-slate-300">
+            Disruption detected: <span className="text-amber-600 dark:text-amber-400">{label}</span>
           </span>
         </div>
 
         {/* Reasoning text */}
-        <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed">
+        <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
           {reasoning}
         </p>
       </div>

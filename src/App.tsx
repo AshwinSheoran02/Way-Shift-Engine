@@ -1,12 +1,10 @@
 import { useState, useCallback } from 'react';
 import type { TripFormData, TripPlan, ReplanResult } from './types/trip.types';
 import { Header } from './components/Layout/Header';
-import { ModeToggle } from './components/Layout/ModeToggle';
 import { TripForm } from './components/Planner/TripForm';
 import { ChatInterface } from './components/Replanner/ChatInterface';
 import { ImportTrip } from './components/Replanner/ImportTrip';
 import { ItineraryView } from './components/ItineraryView/ItineraryView';
-import { MapView } from './components/MapView/MapView';
 import { useItinerary } from './hooks/useItinerary';
 import { useChat } from './hooks/useChat';
 import { useDisruption } from './hooks/useDisruption';
@@ -19,8 +17,7 @@ import { parseImportedTrip } from './services/importParser';
 
 /**
  * Main application component.
- * Manages mode switching between Planner and Replanner,
- * wires hooks together, and renders the full layout.
+ * Full-width layout, unified header with dark mode toggle.
  */
 export default function App() {
   const [mode, setMode] = useState<'planner' | 'replanner'>('planner');
@@ -80,35 +77,34 @@ export default function App() {
   }, [setPlan, clearDisruption]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-[var(--color-bg-primary)]">
-      <Header />
-      <ModeToggle activeMode={mode} onModeChange={setMode} hasPlan={!!currentPlan} />
+    <div className="w-full min-h-screen bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100">
+      <Header mode={mode} onModeChange={setMode} hasPlan={!!currentPlan} />
 
       {/* Fallback banner */}
       {showFallbackBanner && (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-2">
-          <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[var(--color-warning-bg)] border border-[var(--color-warning-border)]/30 text-[var(--color-warning-text)] text-xs font-medium animate-fade-in">
+        <div className="px-4 py-2">
+          <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-700 text-amber-800 dark:text-amber-300 text-xs font-medium animate-fade-in">
             ⚠️ {importWarning || 'Using demo data — add VITE_GEMINI_API_KEY to .env for live generation'}
           </div>
         </div>
       )}
 
       {/* Main content */}
-      <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6">
+      <main className="w-full">
         {/* Planner panel */}
         {mode === 'planner' && (
           <div
             role="tabpanel"
             id="panel-planner"
             aria-labelledby="tab-planner"
-            className="max-w-2xl mx-auto"
+            className="w-full max-w-2xl mx-auto px-6 py-8"
           >
-            <div className="glass rounded-2xl p-6 sm:p-8">
+            <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 sm:p-8 shadow-sm">
               <div className="mb-6">
-                <h2 className="text-lg font-bold text-[var(--color-text-primary)] mb-1">
+                <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-1">
                   ✈️ Plan Your Trip
                 </h2>
-                <p className="text-sm text-[var(--color-text-muted)]">
+                <p className="text-sm text-slate-500 dark:text-slate-400">
                   Tell us about your dream trip and we&apos;ll create a detailed itinerary.
                 </p>
               </div>
@@ -126,19 +122,19 @@ export default function App() {
           >
             {!currentPlan ? (
               /* No plan loaded yet */
-              <div className="max-w-2xl mx-auto space-y-6">
-                <div className="glass rounded-2xl p-8 text-center animate-fade-in">
+              <div className="w-full max-w-2xl mx-auto px-6 py-8 space-y-6">
+                <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-8 text-center shadow-sm animate-fade-in">
                   <div className="text-5xl mb-4">🗺️</div>
-                  <h2 className="text-lg font-bold text-[var(--color-text-primary)] mb-2">
+                  <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-2">
                     No trip loaded yet
                   </h2>
-                  <p className="text-sm text-[var(--color-text-muted)] mb-4">
+                  <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">
                     Create a trip in the Planner tab, or import an existing one below.
                   </p>
                   <button
                     type="button"
                     onClick={() => setMode('planner')}
-                    className="gradient-accent text-white px-6 py-2.5 rounded-xl font-medium text-sm hover:opacity-90 transition-opacity shadow-lg shadow-purple-500/20"
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-xl font-medium text-sm transition-colors shadow-lg shadow-indigo-500/20"
                   >
                     ✈️ Plan a Trip
                   </button>
@@ -146,11 +142,11 @@ export default function App() {
                 <ImportTrip onImport={handleImport} loading={importLoading} />
               </div>
             ) : (
-              /* Two-column layout: Chat + Itinerary */
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              /* Two-column layout: Chat + Itinerary — full width, edge to edge */
+              <div className="w-full grid grid-cols-1 lg:grid-cols-2">
                 {/* Left: Chat + Import */}
-                <div className="space-y-4">
-                  <div className="glass rounded-2xl overflow-hidden">
+                <div className="h-screen overflow-y-auto border-r border-slate-200 dark:border-slate-700 flex flex-col">
+                  <div className="flex-1">
                     <ChatInterface
                       messages={messages}
                       loading={chatLoading}
@@ -160,35 +156,20 @@ export default function App() {
                   <ImportTrip onImport={handleImport} loading={importLoading} />
                 </div>
 
-                {/* Right: Itinerary + Map */}
-                <div className="space-y-4">
-                  <div className="glass rounded-2xl p-5 sm:p-6">
-                    <ItineraryView
-                      plan={currentPlan}
-                      changedActivityIds={changedActivityIds}
-                      removedActivityIds={removedActivityIds}
-                      addedActivityIds={addedActivityIds}
-                    />
-                  </div>
-                  <MapView plan={currentPlan} />
+                {/* Right: Itinerary */}
+                <div className="h-screen overflow-y-auto">
+                  <ItineraryView
+                    plan={currentPlan}
+                    changedActivityIds={changedActivityIds}
+                    removedActivityIds={removedActivityIds}
+                    addedActivityIds={addedActivityIds}
+                  />
                 </div>
               </div>
             )}
           </div>
         )}
       </main>
-
-      {/* Footer */}
-      <footer className="border-t border-white/5 py-4 mt-auto">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <p className="text-xs text-[var(--color-text-muted)]">
-            Wayshift uses Google Gemini AI. Verify important travel information with official sources.
-          </p>
-          <p className="text-xs text-[var(--color-text-muted)]">
-            Built with ❤️ for travellers
-          </p>
-        </div>
-      </footer>
     </div>
   );
 }

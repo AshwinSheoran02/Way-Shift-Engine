@@ -10,8 +10,8 @@ interface ChatInterfaceProps {
 }
 
 /**
- * Chat interface with message thread, typing indicator, and send functionality.
- * Includes example disruption hints for first-time users.
+ * Chat interface with message thread, typing indicator, suggestion chips, and send functionality.
+ * Light-first design with dark: variants.
  */
 export function ChatInterface({ messages, loading, onSendMessage }: ChatInterfaceProps) {
   const [inputValue, setInputValue] = useState('');
@@ -52,27 +52,22 @@ export function ChatInterface({ messages, loading, onSendMessage }: ChatInterfac
   }, []);
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full bg-slate-50 dark:bg-slate-900">
+      {/* Chat header */}
+      <div className="px-4 py-3 border-b border-slate-200 dark:border-slate-700">
+        <h3 className="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2">
+          💬 Tell me what changed
+        </h3>
+      </div>
+
       {/* Messages area */}
       <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-4 min-h-[200px] max-h-[500px]">
         {messages.length === 0 && (
           <div className="text-center py-8 animate-fade-in">
             <div className="text-4xl mb-3">💬</div>
-            <p className="text-[var(--color-text-secondary)] text-sm mb-4">
-              Tell me what changed in your trip
+            <p className="text-slate-500 dark:text-slate-400 text-sm mb-4">
+              Describe any disruption and I&apos;ll adjust your plan
             </p>
-            <div className="flex flex-wrap gap-2 justify-center">
-              {DISRUPTION_EXAMPLES.slice(0, 4).map((example) => (
-                <button
-                  key={example}
-                  type="button"
-                  onClick={() => handleExampleClick(example)}
-                  className="px-3 py-1.5 rounded-lg bg-[var(--color-bg-elevated)] text-[var(--color-text-muted)] text-xs hover:text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-card)] transition-colors border border-white/5"
-                >
-                  &ldquo;{example}&rdquo;
-                </button>
-              ))}
-            </div>
           </div>
         )}
 
@@ -83,23 +78,41 @@ export function ChatInterface({ messages, loading, onSendMessage }: ChatInterfac
         {/* Typing indicator */}
         {loading && (
           <div className="flex items-start gap-3 animate-fade-in">
-            <div className="w-8 h-8 rounded-full gradient-accent flex items-center justify-center text-xs font-bold text-white shadow-md">
+            <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-xs font-bold text-white shadow-md">
               W
             </div>
-            <div className="glass rounded-2xl rounded-tl-md px-4 py-3">
+            <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl rounded-bl-sm px-4 py-3">
               <div className="flex items-center gap-1.5">
                 <span className="typing-dot" />
                 <span className="typing-dot" />
                 <span className="typing-dot" />
-                <span className="text-xs text-[var(--color-text-muted)] ml-2">Analyzing disruption...</span>
+                <span className="text-xs text-slate-400 dark:text-slate-500 ml-2">Analyzing disruption...</span>
               </div>
             </div>
           </div>
         )}
       </div>
 
+      {/* Suggestion chips */}
+      {messages.length === 0 && (
+        <div className="px-4 pb-3 border-t border-slate-200 dark:border-slate-700 pt-3">
+          <div className="flex flex-wrap gap-2">
+            {DISRUPTION_EXAMPLES.slice(0, 4).map((example) => (
+              <button
+                key={example}
+                type="button"
+                onClick={() => handleExampleClick(example)}
+                className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-600 dark:text-slate-400 rounded-full px-3 py-1 hover:border-indigo-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all"
+              >
+                &ldquo;{example}&rdquo;
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Input area */}
-      <div className="p-4 border-t border-white/5">
+      <div className="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700 p-4">
         <div className="flex gap-2">
           <input
             ref={inputRef}
@@ -110,19 +123,19 @@ export function ChatInterface({ messages, loading, onSendMessage }: ChatInterfac
             placeholder="Describe what changed in your trip..."
             aria-label="Describe what changed in your trip"
             disabled={loading}
-            className="flex-1 px-4 py-3 rounded-xl bg-[var(--color-bg-card)] border border-white/10 text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] focus:border-[var(--color-accent-mid)] transition-colors text-sm disabled:opacity-50"
+            className="flex-1 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-4 py-3 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50"
           />
           <button
             type="button"
             onClick={handleSend}
             disabled={!inputValue.trim() || loading}
-            className={`px-5 py-3 rounded-xl font-medium text-sm transition-all duration-200 ${
+            className={`px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
               !inputValue.trim() || loading
-                ? 'bg-[var(--color-bg-elevated)] text-[var(--color-text-muted)] cursor-not-allowed'
-                : 'gradient-accent text-white shadow-lg shadow-purple-500/25 hover:opacity-90 active:scale-95'
+                ? 'bg-slate-200 dark:bg-slate-700 text-slate-400 dark:text-slate-500 cursor-not-allowed'
+                : 'bg-indigo-600 hover:bg-indigo-700 text-white'
             }`}
           >
-            Send
+            Send →
           </button>
         </div>
       </div>

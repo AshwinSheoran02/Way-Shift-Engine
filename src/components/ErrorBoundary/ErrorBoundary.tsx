@@ -35,21 +35,21 @@ export class ErrorBoundary extends Component<Props, State> {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="min-h-screen flex items-center justify-center bg-[var(--color-bg-primary)] p-4">
-          <div className="glass rounded-2xl p-8 max-w-md w-full text-center animate-fade-in">
+        <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900 p-4">
+          <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-8 max-w-md w-full text-center shadow-lg animate-fade-in">
             <div className="text-5xl mb-4">🛑</div>
-            <h2 className="text-xl font-bold text-[var(--color-text-primary)] mb-2">
+            <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
               Something went wrong
             </h2>
-            <p className="text-[var(--color-text-secondary)] mb-1 text-sm">
+            <p className="text-slate-600 dark:text-slate-400 mb-1 text-sm">
               Wayshift encountered an unexpected error.
             </p>
-            <p className="text-[var(--color-text-muted)] mb-6 text-xs font-mono bg-[var(--color-bg-card)] rounded-lg p-3">
+            <p className="text-slate-500 dark:text-slate-500 mb-6 text-xs font-mono bg-slate-50 dark:bg-slate-900 rounded-lg p-3 border border-slate-200 dark:border-slate-700">
               {this.state.errorMessage || 'Unknown error'}
             </p>
             <button
               onClick={this.handleReload}
-              className="gradient-accent text-white px-6 py-2.5 rounded-lg font-medium text-sm hover:opacity-90 transition-opacity shadow-lg shadow-purple-500/20"
+              className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-lg font-medium text-sm transition-colors shadow-lg shadow-indigo-500/20"
             >
               Reload Wayshift
             </button>
